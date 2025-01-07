@@ -38,9 +38,11 @@ object Game extends App {
   }
 
   def printGame(): Unit = {
-    display.clear()
-    printMap()
-    printPlayer()
+    display.frontBuffer.synchronized{
+      display.clear()
+      printMap()
+      printPlayer()
+    }
   }
 
   def manageKeys(): Unit = {
@@ -56,11 +58,11 @@ object Game extends App {
     override def keyPressed(e: KeyEvent): Unit = pressedKeys += e.getKeyCode
   })
 
-  printMap()
   while(true) {
     manageKeys()
     printGame()
-    Thread.sleep(75)
+    display.syncGameLogic(60)
+    Thread.sleep(70)
   }
 
 }
