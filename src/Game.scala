@@ -1,7 +1,9 @@
 import hevs.graphics.FunGraphics
 
 import java.awt.Color
-import java.awt.event.{KeyEvent, KeyListener}
+import java.awt.event.{KeyEvent, KeyListener, MouseEvent, MouseListener}
+import java.util.{Timer, TimerTask}
+import javax.swing.SwingConstants
 import scala.collection.mutable.ArrayBuffer
 
 object Game extends App {
@@ -17,7 +19,9 @@ object Game extends App {
   val map: Map = new Map(CELLS_XNBR, CELLS_YNBR)
   val player: Player = new Player(1, 1, 2)
   val player2: Player = new Player(CELLS_XNBR-2,CELLS_XNBR-2 ,3)
+  var play: Boolean = false
   var pressedKeys: ArrayBuffer[Int] = ArrayBuffer.empty[Int]
+  var timerVal: Int = 30
 
   def printMap(): Unit = {
     val offset: Int = CELL_WIDTH*2
@@ -28,10 +32,10 @@ object Game extends App {
             display.setColor(Color.black)
             display.drawFillRect(offset+i*CELL_WIDTH, offset+j*CELL_WIDTH, CELL_WIDTH, CELL_WIDTH)
           case 2 =>
-            display.setColor(Color.blue)
+            display.setColor(Color.red)
             display.drawFillRect(offset+i*CELL_WIDTH, offset+j*CELL_WIDTH, CELL_WIDTH, CELL_WIDTH)
           case 3 =>
-            display.setColor(Color.red)
+            display.setColor(Color.blue)
             display.drawFillRect(offset+i*CELL_WIDTH, offset+j*CELL_WIDTH, CELL_WIDTH, CELL_WIDTH)
           case _ =>
         }
@@ -39,16 +43,21 @@ object Game extends App {
     }
   }
 
+  def printTimer(): Unit = {
+    val strVal: String = timerVal.toString
+    display.drawString(display.getFrameWidth()/2, 35, strVal, halign = SwingConstants.CENTER)
+  }
+
   def printPlayer(): Unit = {
     val offset: Int = CELL_WIDTH*2
-    display.setColor(Color.black)
+    display.setColor(new Color(150,0,0))
     display.drawFilledCircle(
       offset+player.posX*CELL_WIDTH,
       offset+player.posY*CELL_WIDTH,
       CELL_WIDTH
     )
 
-    display.setColor(Color.gray)
+    display.setColor(new Color(0,0,130))
     display.drawFilledCircle(
       offset+player2.posX*CELL_WIDTH,
       offset+player2.posY*CELL_WIDTH,
@@ -60,8 +69,22 @@ object Game extends App {
     display.frontBuffer.synchronized{
       display.clear()
       printMap()
+      printTimer()
       printPlayer()
     }
+  }
+
+  def printScores(): Unit = {
+    val p1Score: Int = map.cells.flatten.count(_ == 2)  // flatten converts a 2d array into a 1d array. Ex: [[1, 2, 3], [4, 5, 6]] => [1, 2, 3, 4, 5, 6]
+    val p2Score: Int = map.cells.flatten.count(_ == 3)
+    display.drawString(display.getFrameWidth()/4, display.getFrameHeight()/3, s"Player 1 score: ${p1Score.toString}", color = Color.red, halign = SwingConstants.CENTER)
+    display.drawString(display.getFrameWidth()/4*3, display.getFrameHeight()/3, s"Player 2 score: ${p2Score.toString}", color = Color.blue, halign = SwingConstants.CENTER)
+    val resultMsg: String = {
+      if(p1Score>p2Score) "PLAYER 1 WINS!"
+      else if(p2Score>p1Score) "PLAYER 2 WINS!"
+      else "IT'S A TIE!"
+    }
+    display.drawString(display.getFrameWidth()/2, display.getFrameHeight()/3*2, resultMsg, halign = SwingConstants.CENTER)
   }
 
   def manageKeys(): Unit = {
@@ -86,13 +109,34 @@ object Game extends App {
     override def keyPressed(e: KeyEvent): Unit = if(!pressedKeys.contains(e.getKeyCode)) pressedKeys += e.getKeyCode
   })
 
+  val timer: Timer = new Timer()
+  val timerTask: TimerTask = new TimerTask {
+    override def run(): Unit = {
+      if(timerVal != 0) timerVal -= 1
+      else {
+        timer.cancel()
+        play = false
+        display.clear()
+        Thread.sleep(1000)
+        printScores()
+      }
+    }
+  }
+
+  play = true
   while(true) {
-    player.alreadyMoved = false
-    player2.alreadyMoved = false
-    manageKeys()
-    printGame()
-    display.syncGameLogic(60)
-    Thread.sleep(70)
+    if(play) {
+      timerVal = 30
+      timer.schedule(timerTask, 1000L, 1000L)
+    }
+    while(play) {
+      player.alreadyMoved = false
+      player2.alreadyMoved = false
+      manageKeys()
+      printGame()
+      display.syncGameLogic(60)
+      Thread.sleep(70)
+    }
   }
 
 }
