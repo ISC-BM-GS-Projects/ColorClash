@@ -6,6 +6,7 @@ object Direction extends Enumeration {
 }
 
 class Player(var posX: Int, var posY: Int,val playerId:Int) {
+  var alreadyMoved: Boolean = false
 
   /**
    *
@@ -14,16 +15,19 @@ class Player(var posX: Int, var posY: Int,val playerId:Int) {
    * @param playerId 2 for player1, 3 for player2
    */
   def move(direction: Int, map: Map): Unit = {
-    direction match {
-      case Direction.Left =>
-        if(!(map.getCell(posX-1, posY)==1)) posX -= 1
-      case Direction.Top =>
-        if(!(map.getCell(posX, posY-1)==1)) posY -= 1
-      case Direction.Right =>
-        if(!(map.getCell(posX+1, posY)==1)) posX += 1
-      case Direction.Bottom =>
-        if(!(map.getCell(posX, posY+1)==1)) posY += 1
+    if(!alreadyMoved) {
+      alreadyMoved = true
+      direction match {
+        case Direction.Left =>
+          if (!(map.getCell(posX - 1, posY) == 1)) posX -= 1
+        case Direction.Top =>
+          if (!(map.getCell(posX, posY - 1) == 1)) posY -= 1
+        case Direction.Right =>
+          if (!(map.getCell(posX + 1, posY) == 1)) posX += 1
+        case Direction.Bottom =>
+          if (!(map.getCell(posX, posY + 1) == 1)) posY += 1
+      }
+      map.setCell(this.posX, this.posY, playerId)
     }
-    map.setCell(this.posX,this.posY,playerId)
   }
 }

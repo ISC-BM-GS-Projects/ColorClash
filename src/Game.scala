@@ -2,6 +2,7 @@ import hevs.graphics.FunGraphics
 
 import java.awt.Color
 import java.awt.event.{KeyEvent, KeyListener}
+import scala.collection.mutable.ArrayBuffer
 
 object Game extends App {
 
@@ -16,7 +17,7 @@ object Game extends App {
   val map: Map = new Map(CELLS_XNBR, CELLS_YNBR)
   val player: Player = new Player(1, 1, 2)
   val player2: Player = new Player(CELLS_XNBR-2,CELLS_XNBR-2 ,3)
-  var pressedKeys: Set[Int] = Set.empty[Int]
+  var pressedKeys: ArrayBuffer[Int] = ArrayBuffer.empty[Int]
 
   def printMap(): Unit = {
     val offset: Int = CELL_WIDTH*2
@@ -64,24 +65,30 @@ object Game extends App {
   }
 
   def manageKeys(): Unit = {
-    if(pressedKeys.contains(KeyEvent.VK_A)) player.move(Direction.Left, map)
-    if(pressedKeys.contains(KeyEvent.VK_W)) player.move(Direction.Top, map)
-    if(pressedKeys.contains(KeyEvent.VK_D)) player.move(Direction.Right, map)
-    if(pressedKeys.contains(KeyEvent.VK_S)) player.move(Direction.Bottom, map)
-
-    if(pressedKeys.contains(KeyEvent.VK_LEFT)) player2.move(Direction.Left, map)
-    if(pressedKeys.contains(KeyEvent.VK_UP)) player2.move(Direction.Top, map)
-    if(pressedKeys.contains(KeyEvent.VK_RIGHT)) player2.move(Direction.Right, map)
-    if(pressedKeys.contains(KeyEvent.VK_DOWN)) player2.move(Direction.Bottom, map)
+    for(i <- pressedKeys.size-1 to 0 by -1) {
+      pressedKeys(i) match {
+        case KeyEvent.VK_A => player.move(Direction.Left, map)
+        case KeyEvent.VK_W => player.move(Direction.Top, map)
+        case KeyEvent.VK_D => player.move(Direction.Right, map)
+        case KeyEvent.VK_S => player.move(Direction.Bottom, map)
+        case KeyEvent.VK_LEFT => player2.move(Direction.Left, map)
+        case KeyEvent.VK_UP => player2.move(Direction.Top, map)
+        case KeyEvent.VK_RIGHT => player2.move(Direction.Right, map)
+        case KeyEvent.VK_DOWN => player2.move(Direction.Bottom, map)
+        case _ => // do nothing
+      }
+    }
   }
 
   display.setKeyManager(new KeyListener {
     override def keyTyped(e: KeyEvent): Unit = {}
     override def keyReleased(e: KeyEvent): Unit = pressedKeys -= e.getKeyCode
-    override def keyPressed(e: KeyEvent): Unit = pressedKeys += e.getKeyCode
+    override def keyPressed(e: KeyEvent): Unit = if(!pressedKeys.contains(e.getKeyCode)) pressedKeys += e.getKeyCode
   })
 
   while(true) {
+    player.alreadyMoved = false
+    player2.alreadyMoved = false
     manageKeys()
     printGame()
     display.syncGameLogic(60)
