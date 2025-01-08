@@ -12,27 +12,45 @@ object Game extends App {
   val MAP_HEIGHT: Int = CELL_WIDTH * CELLS_YNBR
   // display = map + 2 cells on each sides
   val display: FunGraphics = new FunGraphics(MAP_WIDTH + 4*CELL_WIDTH, MAP_HEIGHT + 4*CELL_WIDTH)
-  // map cells = 2d array of Boolean (true = wall, false = nothing)
+  // map cells = 2d array of Int (0=nothing,1=wall,2=bluecell,3=redcell)
   val map: Map = new Map(CELLS_XNBR, CELLS_YNBR)
-  val player: Player = new Player(CELLS_XNBR/2, CELLS_YNBR/2)
+  val player: Player = new Player(1, 1, 2)
+  val player2: Player = new Player(CELLS_XNBR-2,CELLS_XNBR-2 ,3)
   var pressedKeys: Set[Int] = Set.empty[Int]
 
   def printMap(): Unit = {
     val offset: Int = CELL_WIDTH*2
-    display.setColor(Color.black)
     for(i <- map.cells.indices) {
       for(j <- map.cells(i).indices) {
-        if(map.getCell(i, j)) display.drawFillRect(offset+i*CELL_WIDTH, offset+j*CELL_WIDTH, CELL_WIDTH, CELL_WIDTH)
+        map.getCell(i, j) match {
+          case 1 =>
+            display.setColor(Color.black)
+            display.drawFillRect(offset+i*CELL_WIDTH, offset+j*CELL_WIDTH, CELL_WIDTH, CELL_WIDTH)
+          case 2 =>
+            display.setColor(Color.blue)
+            display.drawFillRect(offset+i*CELL_WIDTH, offset+j*CELL_WIDTH, CELL_WIDTH, CELL_WIDTH)
+          case 3 =>
+            display.setColor(Color.red)
+            display.drawFillRect(offset+i*CELL_WIDTH, offset+j*CELL_WIDTH, CELL_WIDTH, CELL_WIDTH)
+          case _ =>
+        }
       }
     }
   }
 
   def printPlayer(): Unit = {
     val offset: Int = CELL_WIDTH*2
-    display.setColor(Color.red)
+    display.setColor(Color.black)
     display.drawFilledCircle(
       offset+player.posX*CELL_WIDTH,
       offset+player.posY*CELL_WIDTH,
+      CELL_WIDTH
+    )
+
+    display.setColor(Color.gray)
+    display.drawFilledCircle(
+      offset+player2.posX*CELL_WIDTH,
+      offset+player2.posY*CELL_WIDTH,
       CELL_WIDTH
     )
   }
@@ -50,6 +68,11 @@ object Game extends App {
     if(pressedKeys.contains(KeyEvent.VK_W)) player.move(Direction.Top, map)
     if(pressedKeys.contains(KeyEvent.VK_D)) player.move(Direction.Right, map)
     if(pressedKeys.contains(KeyEvent.VK_S)) player.move(Direction.Bottom, map)
+
+    if(pressedKeys.contains(KeyEvent.VK_LEFT)) player2.move(Direction.Left, map)
+    if(pressedKeys.contains(KeyEvent.VK_UP)) player2.move(Direction.Top, map)
+    if(pressedKeys.contains(KeyEvent.VK_RIGHT)) player2.move(Direction.Right, map)
+    if(pressedKeys.contains(KeyEvent.VK_DOWN)) player2.move(Direction.Bottom, map)
   }
 
   display.setKeyManager(new KeyListener {
