@@ -28,6 +28,11 @@ class Player(var posX: Int, var posY: Int,val playerId:Int) {
           if (!(map.getCell(posX, posY + 1) == 1)) posY += 1
       }
       map.setCell(this.posX, this.posY, playerId)
+      checkFilledForm()
     }
+  }
+
+  def checkFilledForm(): Unit = {
+
   }
 }

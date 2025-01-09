@@ -1,8 +1,8 @@
-class Map(val cellsX: Int, val cellsY: Int,val level: Int) {
+class Map(val cellsX: Int, val cellsY: Int, val level: Int) {
 
-  val cells: Array[Array[Int]] = generateCells(cellsX, cellsY,level)
+  val cells: Array[Array[Int]] = generateCells(cellsX, cellsY, level)
 
-  def generateCells(cellsX: Int, cellsY: Int,level:Int ): Array[Array[Int]] = {
+  def generateCells(cellsX: Int, cellsY: Int, level:Int ): Array[Array[Int]] = {
     val cells: Array[Array[Int]] = Array.fill(cellsX, cellsY)(0)
     for(i <- 0 until cellsX) {
       for(j <- 0 until cellsY) {

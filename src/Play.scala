@@ -1,7 +1,7 @@
 import hevs.graphics.FunGraphics
 
 import java.awt.Color
-import java.awt.event.{KeyEvent, KeyListener, MouseEvent, MouseListener}
+import java.awt.event.{KeyAdapter, KeyEvent, KeyListener, MouseEvent, MouseListener}
 import java.util.{Timer, TimerTask}
 import javax.swing.SwingConstants
 import scala.collection.mutable.ArrayBuffer
@@ -99,8 +99,7 @@ class Play(val display: FunGraphics,val level:Int) {
     }
   }
 
-  display.setKeyManager(new KeyListener {
-    override def keyTyped(e: KeyEvent): Unit = {}
+  display.setKeyManager(new KeyAdapter {
     override def keyReleased(e: KeyEvent): Unit = pressedKeys -= e.getKeyCode
     override def keyPressed(e: KeyEvent): Unit = if(!pressedKeys.contains(e.getKeyCode)) pressedKeys += e.getKeyCode
   })
