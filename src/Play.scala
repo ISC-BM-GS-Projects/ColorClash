@@ -6,12 +6,12 @@ import java.util.{Timer, TimerTask}
 import javax.swing.SwingConstants
 import scala.collection.mutable.ArrayBuffer
 
-class Play(val display: FunGraphics) {
+class Play(val display: FunGraphics,val level:Int) {
   private val CELL_WIDTH: Int = 20
   private val CELLS_XNBR: Int = 20
   private val CELLS_YNBR: Int = 20
   // map cells = 2d array of Int (0=nothing,1=wall,2=bluecell,3=redcell)
-  private val map: Map = new Map(CELLS_XNBR, CELLS_YNBR)
+  private val map: Map = new Map(CELLS_XNBR, CELLS_YNBR,level)
   private val player: Player = new Player(1, 1, 2)
   private val player2: Player = new Player(CELLS_XNBR-2,CELLS_XNBR-2 ,3)
   private val pressedKeys: ArrayBuffer[Int] = ArrayBuffer.empty[Int]
