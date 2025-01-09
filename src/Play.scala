@@ -6,24 +6,20 @@ import java.util.{Timer, TimerTask}
 import javax.swing.SwingConstants
 import scala.collection.mutable.ArrayBuffer
 
-object Game extends App {
-
-  val CELL_WIDTH: Int = 20
-  val CELLS_XNBR: Int = 20
-  val CELLS_YNBR: Int = 20
-  val MAP_WIDTH: Int = CELL_WIDTH * CELLS_XNBR
-  val MAP_HEIGHT: Int = CELL_WIDTH * CELLS_YNBR
-  // display = map + 2 cells on each sides
-  val display: FunGraphics = new FunGraphics(MAP_WIDTH + 4*CELL_WIDTH, MAP_HEIGHT + 4*CELL_WIDTH)
+class Play(val display: FunGraphics) {
+  private val CELL_WIDTH: Int = 20
+  private val CELLS_XNBR: Int = 20
+  private val CELLS_YNBR: Int = 20
   // map cells = 2d array of Int (0=nothing,1=wall,2=bluecell,3=redcell)
-  val map: Map = new Map(CELLS_XNBR, CELLS_YNBR)
-  val player: Player = new Player(1, 1, 2)
-  val player2: Player = new Player(CELLS_XNBR-2,CELLS_XNBR-2 ,3)
-  var play: Boolean = false
-  var pressedKeys: ArrayBuffer[Int] = ArrayBuffer.empty[Int]
-  var timerVal: Int = 30
+  private val map: Map = new Map(CELLS_XNBR, CELLS_YNBR)
+  private val player: Player = new Player(1, 1, 2)
+  private val player2: Player = new Player(CELLS_XNBR-2,CELLS_XNBR-2 ,3)
+  private val pressedKeys: ArrayBuffer[Int] = ArrayBuffer.empty[Int]
+  private var timerVal: Int = 30
+  private var play: Boolean = true
+  var canRestart: Boolean = false
 
-  def printMap(): Unit = {
+  private def printMap(): Unit = {
     val offset: Int = CELL_WIDTH*2
     for(i <- map.cells.indices) {
       for(j <- map.cells(i).indices) {
@@ -43,12 +39,12 @@ object Game extends App {
     }
   }
 
-  def printTimer(): Unit = {
+  private def printTimer(): Unit = {
     val strVal: String = timerVal.toString
     display.drawString(display.getFrameWidth()/2, 35, strVal, halign = SwingConstants.CENTER)
   }
 
-  def printPlayer(): Unit = {
+  private def printPlayer(): Unit = {
     val offset: Int = CELL_WIDTH*2
     display.setColor(new Color(150,0,0))
     display.drawFilledCircle(
@@ -65,7 +61,7 @@ object Game extends App {
     )
   }
 
-  def printGame(): Unit = {
+  private def printGame(): Unit = {
     display.frontBuffer.synchronized{
       display.clear()
       printMap()
@@ -74,7 +70,7 @@ object Game extends App {
     }
   }
 
-  def printScores(): Unit = {
+  private def printScores(): Unit = {
     val p1Score: Int = map.cells.flatten.count(_ == 2)  // flatten converts a 2d array into a 1d array. Ex: [[1, 2, 3], [4, 5, 6]] => [1, 2, 3, 4, 5, 6]
     val p2Score: Int = map.cells.flatten.count(_ == 3)
     display.drawString(display.getFrameWidth()/4, display.getFrameHeight()/3, s"Player 1 score: ${p1Score.toString}", color = Color.red, halign = SwingConstants.CENTER)
@@ -87,7 +83,7 @@ object Game extends App {
     display.drawString(display.getFrameWidth()/2, display.getFrameHeight()/3*2, resultMsg, halign = SwingConstants.CENTER)
   }
 
-  def manageKeys(): Unit = {
+  private def manageKeys(): Unit = {
     for(i <- pressedKeys.size-1 to 0 by -1) {
       pressedKeys(i) match {
         case KeyEvent.VK_A => player.move(Direction.Left, map)
@@ -109,34 +105,30 @@ object Game extends App {
     override def keyPressed(e: KeyEvent): Unit = if(!pressedKeys.contains(e.getKeyCode)) pressedKeys += e.getKeyCode
   })
 
-  val timer: Timer = new Timer()
+  var timer: Timer = new Timer()
   val timerTask: TimerTask = new TimerTask {
     override def run(): Unit = {
       if(timerVal != 0) timerVal -= 1
       else {
-        timer.cancel()
         play = false
+        timer.cancel()
         display.clear()
         Thread.sleep(1000)
         printScores()
+        canRestart = true
       }
     }
   }
 
-  play = true
-  while(true) {
-    if(play) {
-      timerVal = 30
-      timer.schedule(timerTask, 1000L, 1000L)
-    }
-    while(play) {
-      player.alreadyMoved = false
-      player2.alreadyMoved = false
-      manageKeys()
-      printGame()
-      display.syncGameLogic(60)
-      Thread.sleep(70)
-    }
+  timerVal = 5
+  timer.schedule(timerTask, 1000L, 1000L)
+
+  while(play) {
+    player.alreadyMoved = false
+    player2.alreadyMoved = false
+    manageKeys()
+    printGame()
+    display.syncGameLogic(20)
   }
 
 }
