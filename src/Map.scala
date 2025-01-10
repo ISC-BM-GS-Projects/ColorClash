@@ -100,4 +100,12 @@ class Map(val cellsX: Int, val cellsY: Int, val level: Int) {
    *         3 for player2 color (red)
    */
   def getCell(posX: Int, posY: Int): Int = cells(posX)(posY)
+
+  def setCells(newCells: Array[Array[Int]]): Unit = {
+    for(i <- 0 until cellsX) {
+      for(j <- 0 until cellsY) {
+        setCell(i, j, newCells(i)(j))
+      }
+    }
+  }
 }

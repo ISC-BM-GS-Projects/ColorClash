@@ -4,6 +4,7 @@ import java.awt.Color
 import java.awt.event.{KeyAdapter, KeyEvent, KeyListener, MouseEvent, MouseListener}
 import java.util.{Timer, TimerTask}
 import javax.swing.SwingConstants
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 class Play(val display: FunGraphics,val level:Int) {
@@ -12,10 +13,10 @@ class Play(val display: FunGraphics,val level:Int) {
   private val CELLS_YNBR: Int = 20
   // map cells = 2d array of Int (0=nothing,1=wall,2=bluecell,3=redcell)
   private val map: Map = new Map(CELLS_XNBR, CELLS_YNBR,level)
-  private val player: Player = new Player(1, 1, 2)
-  private val player2: Player = new Player(CELLS_XNBR-2,CELLS_XNBR-2 ,3)
+  private val player: Player = new Player(1, 1, 2, map)
+  private val player2: Player = new Player(CELLS_XNBR-2,CELLS_XNBR-2 ,3, map)
   private val pressedKeys: ArrayBuffer[Int] = ArrayBuffer.empty[Int]
-  private var timerVal: Int = 30
+  private var timerVal: Int = 300
   private var play: Boolean = true
   var canRestart: Boolean = false
 
@@ -86,17 +87,37 @@ class Play(val display: FunGraphics,val level:Int) {
   private def manageKeys(): Unit = {
     for(i <- pressedKeys.size-1 to 0 by -1) {
       pressedKeys(i) match {
-        case KeyEvent.VK_A => player.move(Direction.Left, map)
-        case KeyEvent.VK_W => player.move(Direction.Top, map)
-        case KeyEvent.VK_D => player.move(Direction.Right, map)
-        case KeyEvent.VK_S => player.move(Direction.Bottom, map)
-        case KeyEvent.VK_LEFT => player2.move(Direction.Left, map)
-        case KeyEvent.VK_UP => player2.move(Direction.Top, map)
-        case KeyEvent.VK_RIGHT => player2.move(Direction.Right, map)
-        case KeyEvent.VK_DOWN => player2.move(Direction.Bottom, map)
+        case KeyEvent.VK_A => player.move(Direction.Left, player2)
+        case KeyEvent.VK_W => player.move(Direction.Top, player2)
+        case KeyEvent.VK_D => player.move(Direction.Right, player2)
+        case KeyEvent.VK_S => player.move(Direction.Bottom, player2)
+        case KeyEvent.VK_LEFT => player2.move(Direction.Left, player)
+        case KeyEvent.VK_UP => player2.move(Direction.Top, player)
+        case KeyEvent.VK_RIGHT => player2.move(Direction.Right, player)
+        case KeyEvent.VK_DOWN => player2.move(Direction.Bottom, player)
         case _ => // do nothing
       }
     }
+  }
+
+  /**
+   * Checks if one of the players has captured all the cells
+   * @return true if a player has captured every possible cell
+   */
+  private def checkPerfectWin(): Boolean = {
+    var p1Win: Boolean = true
+    var p2Win: Boolean = true
+    for(i <- 0 until map.cellsX) {
+      for(j <- 0 until map.cellsY) {
+        if(map.getCell(i, j) == 0) {
+          p1Win = false
+          p2Win = false
+        }
+        if(map.getCell(i, j) == player.playerId) p2Win = false
+        if(map.getCell(i, j) == player2.playerId) p1Win = false
+      }
+    }
+    p1Win || p2Win
   }
 
   display.setKeyManager(new KeyAdapter {
@@ -118,8 +139,6 @@ class Play(val display: FunGraphics,val level:Int) {
       }
     }
   }
-
-  timerVal = 5
   timer.schedule(timerTask, 1000L, 1000L)
 
   while(play) {
@@ -127,7 +146,8 @@ class Play(val display: FunGraphics,val level:Int) {
     player2.alreadyMoved = false
     manageKeys()
     printGame()
-    display.syncGameLogic(20)
+    if(checkPerfectWin()) timerVal = 0
+    display.syncGameLogic(15)
   }
 
 }
