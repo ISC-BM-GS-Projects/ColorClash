@@ -60,7 +60,7 @@ object ColorIO extends App {
     if(startBtn.clicked) {
       startBtn.clicked = false
       startBtn.visible = false
-      if(play.isEmpty || play.get.canRestart) play = Some(new Play(display, Random.nextInt(3)+1))
+      if(play.isEmpty || play.get.canRestart) play = Some(new Play(display, Random.nextInt(4)+1))
     }
   }
 }

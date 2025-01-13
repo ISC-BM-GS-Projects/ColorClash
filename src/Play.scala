@@ -15,9 +15,12 @@ class Play(val display: FunGraphics,val level:Int) {
   private val player: Player = new Player(1, 1, 2, map)
   private val player2: Player = new Player(CELLS_XNBR-2,CELLS_XNBR-2 ,3, map)
   private val pressedKeys: ArrayBuffer[Int] = ArrayBuffer.empty[Int]
-  private var timerVal: Int = 150
+  private var timerVal: Int = 145
   private var play: Boolean = true
   var canRestart: Boolean = false
+  val backgroundMusic = new Audio("/res/music1.wav")
+  backgroundMusic.play()
+  val victoryMusic = new Audio("/res/victory.wav")
 
   private def printMap(): Unit = {
     val offset: Int = CELL_WIDTH*2+3
@@ -137,6 +140,8 @@ class Play(val display: FunGraphics,val level:Int) {
         display.clear()
         Thread.sleep(1000)
         printScores()
+        backgroundMusic.stop()
+        victoryMusic.play()
         canRestart = true
       }
     }
@@ -151,5 +156,4 @@ class Play(val display: FunGraphics,val level:Int) {
     if(checkPerfectWin()) timerVal = 0
     display.syncGameLogic(15)
   }
-
 }
