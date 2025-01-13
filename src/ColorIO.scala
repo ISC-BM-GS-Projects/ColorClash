@@ -27,7 +27,18 @@ object ColorIO extends App {
   display.displayFPS(true)
   var play: Option[Play] = None
 
+  drawLoadingScreen()
+
   private val startBtn: Button = new Button(display.width/2-75, display.height/2-37, 150, 75, "START GAME", display, color = Color.green)
+
+  def drawLoadingScreen(): Unit = {
+    display.clear(Color.black)
+    val scMusic = new Audio("/res/supercell-jingle.wav")
+    scMusic.play()
+    Thread.sleep(500)
+    display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,1,"/res/isc-logo.png")
+    Thread.sleep(1000)
+  }
 
   def drawMenu(): Unit = {
     display.clear()
