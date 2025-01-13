@@ -47,6 +47,7 @@ object ColorIO extends App {
         startBtn.clicked = true
       } else {
         if(play.isDefined && play.get.canRestart) {
+          play.get.victoryMusic.stop()
           drawMenu()
         }
       }
