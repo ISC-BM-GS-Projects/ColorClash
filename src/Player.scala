@@ -9,6 +9,7 @@ object Direction extends Enumeration {
 
 class Player(var posX: Int, var posY: Int,val playerId:Int, map: Map) {
   var alreadyMoved: Boolean = false
+  var canMove: Boolean = true
   private val spawnX: Int = posX
   private val spawnY: Int = posY
   spawn()
@@ -18,10 +19,12 @@ class Player(var posX: Int, var posY: Int,val playerId:Int, map: Map) {
    * @param direction
    * @param map
    * @param playerId 2 for player1, 3 for player2
+   * @return true if the player made a perfect win
    */
   def move(direction: Int, opponent: Player): Unit = {
-    if(!alreadyMoved) {
+    if(canMove && !alreadyMoved) {
       alreadyMoved = true
+      map.setCell(posX, posY, playerId)
       direction match {
         case Direction.Left =>
           if (!(map.getCell(posX - 1, posY) == 1)) posX -= 1
@@ -45,6 +48,10 @@ class Player(var posX: Int, var posY: Int,val playerId:Int, map: Map) {
 
   def spawn(): Unit = moveTo(spawnX, spawnY)
 
+  /**
+   * Checks if a form is present in the map
+   * @param opponent the opposing player
+   */
   private def checkFilledForm(opponent: Player): Unit = {
     // We copy the map cells to be able to manipulate our cells without breaking the game
     val cellsCopy: Array[Array[Int]] = map.cells.map(_.clone())
@@ -70,12 +77,18 @@ class Player(var posX: Int, var posY: Int,val playerId:Int, map: Map) {
     }
 
     if(startX != -1) {
+      var respawnOpp: Boolean = false
       val cellsToFill: mutable.Set[(Int, Int)] = floodFill(mapCopy, startX, startY)
       // Fill cells on the game map
       for(cell <- cellsToFill) {
         map.setCell(cell._1, cell._2, playerId)
         // Check if the opposing player is inside those cells and make it respawn if it's the case
-        if(opponent.posX == cell._1 && opponent.posY == cell._2) opponent.spawn()
+        if(opponent.posX == cell._1 && opponent.posY == cell._2) respawnOpp = true
+      }
+      if(respawnOpp && !map.checkPerfectWin()) opponent.spawn()
+      if(map.checkPerfectWin()) {
+        canMove = false
+        opponent.canMove = false
       }
     }
   }

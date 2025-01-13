@@ -105,26 +105,6 @@ class Play(val display: FunGraphics,val level:Int) {
     }
   }
 
-  /**
-   * Checks if one of the players has captured all the cells
-   * @return true if a player has captured every possible cell
-   */
-  private def checkPerfectWin(): Boolean = {
-    var p1Win: Boolean = true
-    var p2Win: Boolean = true
-    for(i <- 0 until map.cellsX) {
-      for(j <- 0 until map.cellsY) {
-        if(map.getCell(i, j) == 0) {
-          p1Win = false
-          p2Win = false
-        }
-        if(map.getCell(i, j) == player.playerId) p2Win = false
-        if(map.getCell(i, j) == player2.playerId) p1Win = false
-      }
-    }
-    p1Win || p2Win
-  }
-
   display.setKeyManager(new KeyAdapter {
     override def keyReleased(e: KeyEvent): Unit = pressedKeys -= e.getKeyCode
     override def keyPressed(e: KeyEvent): Unit = if(!pressedKeys.contains(e.getKeyCode)) pressedKeys += e.getKeyCode
@@ -153,7 +133,7 @@ class Play(val display: FunGraphics,val level:Int) {
     player2.alreadyMoved = false
     manageKeys()
     printGame()
-    if(checkPerfectWin()) timerVal = 0
+    if(map.checkPerfectWin()) timerVal = 0
     display.syncGameLogic(15)
   }
 }

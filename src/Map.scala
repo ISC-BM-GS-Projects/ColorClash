@@ -108,4 +108,22 @@ class Map(val cellsX: Int, val cellsY: Int, val level: Int) {
       }
     }
   }
+
+  /**
+   * Checks if one of the players has captured all the cells
+   * @return true if a player has captured every possible cell
+   */
+  def checkPerfectWin(): Boolean = {
+    var playerId: Int = -1
+    for(i <- 0 until cellsX) {
+      for(j <- 0 until cellsY) {
+        if(getCell(i, j) == 0) return false
+        if(getCell(i, j) != 1) {
+          if(playerId == -1) playerId = getCell(i, j)
+          if(getCell(i, j) != playerId) return false
+        }
+      }
+    }
+    true
+  }
 }
