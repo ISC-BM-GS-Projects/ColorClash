@@ -86,12 +86,12 @@ class Player(var posX: Int, var posY: Int,val playerId:Int, map: Map) {
         if(opponent.posX == cell._1 && opponent.posY == cell._2) respawnOpp = true
       }
       if(respawnOpp && !map.checkPerfectWin()) {
-        val eatMusic = new Audio("/res/eat.wav")
+        val eatMusic = new Audio("/res/music/eat.wav")
         eatMusic.play()
         opponent.spawn()
       }
       if(map.checkPerfectWin()) {
-        val perfectMusic = new Audio("/res/perfect.wav")
+        val perfectMusic = new Audio("/res/music/perfect.wav")
         perfectMusic.play()
         canMove = false
         opponent.canMove = false

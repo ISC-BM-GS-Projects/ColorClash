@@ -6,7 +6,10 @@ import java.util.{Timer, TimerTask}
 import javax.swing.SwingConstants
 import scala.collection.mutable.ArrayBuffer
 
-class Play(val display: FunGraphics,val level:Int) {
+class Play(val display: FunGraphics, val level: Int,
+           val p1ImgPath: String, val p1ImgScale: Double,
+           val p2ImgPath: String, val p2ImgScale: Double) {
+
   private val CELL_WIDTH: Int = 32
   private val CELLS_XNBR: Int = 20
   private val CELLS_YNBR: Int = 20
@@ -18,13 +21,13 @@ class Play(val display: FunGraphics,val level:Int) {
   private var timerVal: Int = 145
   private var play: Boolean = true
   var canRestart: Boolean = false
-  val backgroundMusic = new Audio("/res/music1.wav")
+  val backgroundMusic = new Audio("/res/music/music1.wav")
   backgroundMusic.play()
-  val victoryMusic = new Audio("/res/victory.wav")
+  val victoryMusic = new Audio("/res/music/victory.wav")
 
   private def printMap(): Unit = {
     val offset: Int = CELL_WIDTH*2+3
-    display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,1,"/res/ground_v2.png")
+    display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,1,"/res/level/ground_v2.png")
     for(i <- map.cells.indices) {
       for(j <- map.cells(i).indices) {
         map.getCell(i, j) match {
@@ -40,10 +43,10 @@ class Play(val display: FunGraphics,val level:Int) {
 
     }
     level match{
-      case 1 => display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,2,"/res/wallstone_l1.png")
-      case 2 => display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,2,"/res/wallstone_l2.png")
-      case 3 => display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,2,"/res/wallstone_l3.png")
-      case 4 => display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,2,"/res/wallstone_l4.png")
+      case 1 => display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,2,"/res/level/wallstone_l1.png")
+      case 2 => display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,2,"/res/level/wallstone_l2.png")
+      case 3 => display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,2,"/res/level/wallstone_l3.png")
+      case 4 => display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()/2,0,2,"/res/level/wallstone_l4.png")
     }
   }
 
@@ -54,8 +57,8 @@ class Play(val display: FunGraphics,val level:Int) {
 
   private def printPlayer(): Unit = {
     val offset: Int = CELL_WIDTH*2+CELL_WIDTH/2-1
-    display.drawTransformedPicture(offset+player.posX*CELL_WIDTH,offset+player.posY*CELL_WIDTH,0,2,"/res/player1.png")
-    display.drawTransformedPicture(offset+player2.posX*CELL_WIDTH,offset+player2.posY*CELL_WIDTH,0,2,"/res/player2.png")
+    display.drawTransformedPicture(offset+player.posX*CELL_WIDTH,offset+player.posY*CELL_WIDTH,0,p1ImgScale,p1ImgPath)
+    display.drawTransformedPicture(offset+player2.posX*CELL_WIDTH,offset+player2.posY*CELL_WIDTH,0,p2ImgScale,p2ImgPath)
   }
 
   private def printGame(): Unit = {
@@ -76,14 +79,14 @@ class Play(val display: FunGraphics,val level:Int) {
    var resultMsg:String=""
       if(p1Score>p2Score){
         resultMsg = "PLAYER 1 WINS!"
-        display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()-200,0,3,"/res/player1.png")
+        display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()-200,0,p1ImgScale*2,p1ImgPath)
       } else if(p2Score>p1Score){
         resultMsg =  "PLAYER 2 WINS!"
-        display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()-200,0,3,"/res/player2.png")
+        display.drawTransformedPicture(display.getFrameWidth()/2,display.getFrameHeight()-200,0,p2ImgScale*2,p2ImgPath)
       } else{
         resultMsg = "IT'S A TIE!"
-        display.drawTransformedPicture(display.getFrameWidth()/2-20,display.getFrameHeight()-200,0,3,"/res/player1.png")
-        display.drawTransformedPicture(display.getFrameWidth()/2+20,display.getFrameHeight()-200,0,3,"/res/player2.png")
+        display.drawTransformedPicture(display.getFrameWidth()/2-20,display.getFrameHeight()-200,0,p1ImgScale*2,p1ImgPath)
+        display.drawTransformedPicture(display.getFrameWidth()/2+20,display.getFrameHeight()-200,0,p2ImgScale*2,p2ImgPath)
       }
 
     display.drawString(display.getFrameWidth()/2, display.getFrameHeight()/3*2, resultMsg, halign = SwingConstants.CENTER)
