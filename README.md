@@ -51,7 +51,83 @@ The primary objective is to outmaneuver your opponent by covering more cells wit
 
 ## Screenshots
 
-Include a screenshot or gameplay video to give players a visual preview of the game.
+<div class="carousel-container">
+  <div class="carousel">
+    <div class="carousel-item"><img src="img/CloneTheRepo.png" alt="Image 1"></div>
+    <div class="carousel-item"><img src="img/CopyLink.png" alt="Image 2"></div>
+    <div class="carousel-item"><img src="img/game-project_concept.png" alt="Image 3"></div>
+  </div>
+  <button class="prev">&#10094;</button>
+  <button class="next">&#10095;</button>
+</div>
+
+<style>
+.carousel-container {
+  position: relative;
+  max-width: 100%;
+  margin: auto;
+  overflow: hidden;
+}
+
+.carousel {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+.carousel-item {
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+.carousel img {
+  width: 100%;
+  display: block;
+}
+
+button.prev, button.next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  z-index: 100;
+}
+
+button.prev {
+  left: 10px;
+}
+
+button.next {
+  right: 10px;
+}
+</style>
+
+<script>
+const carousel = document.querySelector('.carousel');
+const items = document.querySelectorAll('.carousel-item');
+const prevButton = document.querySelector('.prev');
+const nextButton = document.querySelector('.next');
+
+let currentIndex = 0;
+
+function updateCarousel() {
+  const offset = -currentIndex * 100;
+  carousel.style.transform = `translateX(${offset}%)`;
+}
+
+prevButton.addEventListener('click', () => {
+  currentIndex = (currentIndex > 0) ? currentIndex - 1 : items.length - 1;
+  updateCarousel();
+});
+
+nextButton.addEventListener('click', () => {
+  currentIndex = (currentIndex < items.length - 1) ? currentIndex + 1 : 0;
+  updateCarousel();
+});
+</script>
 
 ---
 
