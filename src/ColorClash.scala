@@ -4,6 +4,7 @@ import java.awt.Color
 import java.awt.event.{MouseAdapter, MouseEvent}
 import java.io.File
 import javax.imageio.ImageIO
+import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing.{JFileChooser, JOptionPane, SwingConstants}
 import scala.util.Random
 
@@ -64,6 +65,8 @@ object ColorClash extends App {
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY)
     fileChooser.setMultiSelectionEnabled(false)
     fileChooser.setCurrentDirectory(new File("./src/res"))
+    val imageFilter = new FileNameExtensionFilter( "Image Files", "jpg", "jpeg", "png", "gif")
+    fileChooser.setFileFilter(imageFilter)
     val result = fileChooser.showOpenDialog(null)
     if (result == JFileChooser.APPROVE_OPTION) {
       val path: String = fileChooser.getSelectedFile.getAbsolutePath
