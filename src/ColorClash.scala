@@ -26,7 +26,7 @@ class Button(var posX: Int, var posY: Int, var width: Int, var height: Int, text
 
 object ColorClash extends App {
   // display = map + 2 cells on each sides
-  val display: FunGraphics = new FunGraphics(768, 768,420,100,"ColorIO",true)
+  val display: FunGraphics = new FunGraphics(768, 768,420,100,"ColorClash",true)
   display.displayFPS(true)
   var play: Option[Play] = None
   private var p1ImgPath: String = "/res/player1.png"
