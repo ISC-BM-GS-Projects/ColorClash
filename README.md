@@ -52,9 +52,9 @@ The primary objective is to outmaneuver your opponent by covering more cells wit
 
 ## Screenshots
 
-![alt](img/screenshot3.png) ![alt](img/screenshot1.png)
-![alt](img/screenshot5.png)
-![alt](img/screenshot4.png) ![alt](img/game-project_concept.png) ![alt](img/screenshot2.png)
+<img src="img/screenshot3.png" width="50%"/><img src="img/screenshot1.png" width="50%"/>
+<img src="img/screenshot1.png" width="100%"/>
+<img src="img/screenshot4.png" width="33%"/><img src="img/game-project_concept.png" width="33%"/><img src="img/screenshot2.png" width="33%"/>
 
 ---
 
