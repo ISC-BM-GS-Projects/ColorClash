@@ -8,10 +8,10 @@ object Direction extends Enumeration {
 }
 
 class Player(var posX: Int, var posY: Int,val playerId:Int, map: Map) {
-  var alreadyMoved: Boolean = false
-  var canMove: Boolean = true
   private val spawnX: Int = posX
   private val spawnY: Int = posY
+  var alreadyMoved: Boolean = false
+  var canMove: Boolean = true
   spawn()
 
   /**
