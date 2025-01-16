@@ -8,10 +8,10 @@ object Direction extends Enumeration {
 }
 
 class Player(var posX: Int, var posY: Int,val playerId:Int, map: Map) {
-  var alreadyMoved: Boolean = false
-  var canMove: Boolean = true
   private val spawnX: Int = posX
   private val spawnY: Int = posY
+  var alreadyMoved: Boolean = false
+  var canMove: Boolean = true
   spawn()
 
   /**
@@ -85,8 +85,14 @@ class Player(var posX: Int, var posY: Int,val playerId:Int, map: Map) {
         // Check if the opposing player is inside those cells and make it respawn if it's the case
         if(opponent.posX == cell._1 && opponent.posY == cell._2) respawnOpp = true
       }
-      if(respawnOpp && !map.checkPerfectWin()) opponent.spawn()
+      if(respawnOpp && !map.checkPerfectWin()) {
+        val eatMusic = new Audio("/res/music/eat.wav")
+        eatMusic.play()
+        opponent.spawn()
+      }
       if(map.checkPerfectWin()) {
+        val perfectMusic = new Audio("/res/music/perfect.wav")
+        perfectMusic.play()
         canMove = false
         opponent.canMove = false
       }
